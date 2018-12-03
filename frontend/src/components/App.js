@@ -10,8 +10,10 @@ class App extends Component {
 	render() {
 		return (
 			<div className='app'>
-			<NavLink to='/dashboard'>Dashboard</NavLink>
-			<NavLink to='/signup'>SignUp</NavLink>
+				<header>
+					<NavLink to='/dashboard'>Dashboard</NavLink>
+					<NavLink to='/signup'>SignUp</NavLink>
+				</header>
 				<Switch>
 					<Route exact path='/' render={() => <Homepage />} />
 					<Route path='/dashboard' render={() => <Dashboard />} />

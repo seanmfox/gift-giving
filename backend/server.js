@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const User = require('./models').User;
+const userRoutes = require('./routes/users')
 
 require("dotenv").config();
 
@@ -19,27 +20,27 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(logger("dev"));
 
-router.post('/users/', (req, res) => {
-  const user = new User();
-  const { fname, lname, email, password } = req.body;
-  if(!fname || !lname || !email || !password) {
+router.post('/usersignin/', (req, res) => {
+  const { email, password } = req.body;
+  if(!email || !password) {
     return res.json({
       success: false,
       error: "Not all fields have been completed"
     })
   }
-  bcrypt.hash(password, 10).then(hash => {
-    user.fname = fname;
-    user.lname = lname;
-    user.email = email;
-    user.password = hash;
-    user.save(err => {
-      if(err) return res.json({success: false, error: err});
-      return res.json({success: true})
-    })
-  })
 })
 
 app.use('/api', router);
+app.use('/api/users', userRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  // Serve any static files
+  app.use(express.static(`${__dirname}/../frontend/dist`));
+
+  // Handle React routing, return all requests to React app
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/public/index.html"));
+  });
+}
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

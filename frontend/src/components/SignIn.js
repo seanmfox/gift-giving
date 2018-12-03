@@ -29,7 +29,8 @@ class SignIn extends Component {
 							type='text'
 							value={email}
 							onChange={this.onTextChange}
-							placeholder='email'
+              placeholder='email'
+              name='email'
 						/>
 					</label>
 					<label>
@@ -38,10 +39,11 @@ class SignIn extends Component {
 							type='password'
 							value={password}
 							onChange={this.onTextChange}
-							placeholder='password'
+              placeholder='password'
+              name='password'
 						/>
 					</label>
-          <Button type='submit' signup>Sign Up</Button>
+          <Button type='submit' signup>Sign In</Button>
 				</form>
 			</div>
 		);
