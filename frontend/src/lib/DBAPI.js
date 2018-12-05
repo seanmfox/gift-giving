@@ -13,3 +13,13 @@ export async function signinUser(email, password) {
 		body: JSON.stringify({ email, password })
 	}).then(res => res.json());
 }
+
+export async function authenticateUser() {
+	return fetch(`/api/authuser/`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${localStorage.getItem('JWT')}`
+		}
+	}).then(res => res.json());
+}

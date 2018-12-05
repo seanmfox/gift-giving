@@ -5,7 +5,7 @@ class Homepage extends Component {
   render() {
     return (
       <div>
-        <SignIn />
+        <SignIn setUser={(user) => this.props.setUser(user)}/>
       </div>
     );
   }
