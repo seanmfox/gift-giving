@@ -7,6 +7,7 @@ const UserSchema = new Schema (
     lname: String,
     email: {type: String, sparse: true, lowercase: true},
     password: String,
+    groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
   },
   { timestamps: true }
 );

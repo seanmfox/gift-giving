@@ -23,3 +23,11 @@ export async function authenticateUser() {
 		}
 	}).then(res => res.json());
 }
+
+export async function createNewGroup(gname, members, accessCode, userName, userId) {
+	return fetch(`/api/groups`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ gname, members, accessCode, userName, userId })
+	}).then(res => res.json());
+}

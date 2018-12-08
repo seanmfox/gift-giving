@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const User = require('./models').User;
 const userRoutes = require('./routes/users');
+const groupRoutes = require('./routes/groups');
 const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
@@ -43,12 +44,20 @@ router.post('/usersignin/', (req, res) => {
 				});
 			return res.json({
 				token: jwt.sign(
-					{ email: user.email, userId: user._id },
+					{
+						email: user.email,
+						userId: user._id,
+						fname: user.fname,
+						lname: user.lname
+					},
 					process.env.SECRET_KEY
 				),
+				groups: user.groups,
 				email: user.email,
 				success: true,
-				userId: user._id
+				userId: user._id,
+				fname: user.fname,
+				lname: user.lname
 			});
 		});
 	});
@@ -57,15 +66,25 @@ router.post('/usersignin/', (req, res) => {
 router.get('/authuser/', (req, res) => {
 	const token = req.headers.authorization.split(' ')[1];
 	jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
-		User.findById(decoded.userId, (error, user) => {
-			if (error) return res.json({ success: false, error });
-			return res.json({ success: true, userId: user._id, email: user.email });
-		});
+		User.findById(decoded.userId)
+			.populate('groups')
+			.exec((err, user) => {
+				if (err) return res.json({ success: false, err });
+				return res.json({
+					success: true,
+					userId: user._id,
+					email: user.email,
+					fname: user.fname,
+					lname: user.lname,
+					groups: user.groups
+				});
+			});
 	});
 });
 
 app.use('/api', router);
 app.use('/api/users', userRoutes);
+app.use('/api/groups', groupRoutes);
 
 if (process.env.NODE_ENV === 'production') {
 	// Serve any static files
