@@ -1,18 +1,43 @@
 import React, { Component } from 'react';
 import Button from './styles/Button';
-import GroupForm from './GroupForm';
-import { createNewGroup } from '../lib/DBAPI';
+import MemberForm from './MemberForm';
+import { createNewGroup, createNewGift } from '../lib/DBAPI';
+import Groups from './Groups';
+import GiftForm from './GiftForm';
 
 class Dashboard extends Component {
 	state = {
 		gname: '',
-		members: [{ memberName: '' }]
+		members: [{ memberName: '' }],
+		giftName: '',
+		giftCost: '',
+		groupId: '',
+		giftPurchaser: '',
+		participants: [],
+		giftRecipient: ''
 	};
 
 	onChangeText = e => {
 		const newState = { ...this.state };
 		newState[e.target.name] = e.target.value;
 		this.setState(newState);
+		if (e.target.name === 'groupId') return this.resetParticipants();
+	};
+
+	resetParticipants = () => {
+		this.setState({ participants: [] })
+	};
+
+	onCheckboxChange = e => {
+		const newState = { ...this.state };
+		const memberList = this.props.user.groups.filter(group => group._id === newState.groupId)[0].members
+		const checkedMembers =
+			e.target.checked === true
+				? newState[e.target.name].concat(memberList[e.target.value])
+				: newState[e.target.name].filter(
+						participant => participant.memberName !== memberList[e.target.value].memberName
+				);
+		this.setState({ participants: checkedMembers });
 	};
 
 	onMemberChangeText = e => {
@@ -42,14 +67,21 @@ class Dashboard extends Component {
 	};
 
 	async createGroup(gname, members) {
-    const { user } = this.props;
-    const userName = `${user.fname} ${user.lname}`
-    const accessCode = this.createAccessCode();
-		const group = await createNewGroup(gname, members, accessCode, userName, user.userId);
+		const { user } = this.props;
+		const userName = `${user.fname} ${user.lname}`;
+		const accessCode = this.createAccessCode();
+		const group = await createNewGroup(
+			gname,
+			members,
+			accessCode,
+			userName,
+			user.userId
+		);
 		if (!group.success) {
 			console.log('Group not created');
 		} else {
 			this.setState({ gname: '', members: [{ memberName: '' }] });
+			this.props.updateUserGroup(group);
 		}
 	}
 
@@ -65,8 +97,32 @@ class Dashboard extends Component {
 		return code;
 	};
 
+	submitGift = e => {
+		e.preventDefault();
+		const { giftName, giftCost, groupId, participants, giftRecipient, giftPurchaser } = this.state;
+		const { user } = this.props
+		this.createGift(giftName, giftCost, groupId, participants, giftRecipient, giftPurchaser, user.userId)
+	};
+
+	async createGift(...giftArgs) {
+		const gift = await createNewGift(...giftArgs)
+		if (!gift.success) {
+			console.log('Gift not created')
+		} else {
+			this.props.updateUserGroup(gift)
+		}
+	}
+
 	render() {
-		const { gname, members } = this.state;
+		const {
+			gname,
+			members,
+			giftName,
+			giftCost,
+			groupId
+		} = this.state;
+		const { user } = this.props;
+
 		return (
 			<div>
 				<h1>Dashboard</h1>
@@ -78,16 +134,31 @@ class Dashboard extends Component {
 						onChange={this.onChangeText}
 						placeholder='Group Name'
 					/>
-					<Button onClick={this.addInput}>Add Group Member</Button>
-					<GroupForm
+					<Button type='button' onClick={this.addInput}>
+						Add Group Member
+					</Button>
+					<MemberForm
 						members={members}
 						handleMemberChangeText={this.onMemberChangeText}
 						handleMemberDelete={this.removeInput}
 					/>
 					<Button type='submit'>Submit</Button>
 				</form>
-				<p>Boolean - If no family code, set it or request one</p>
-				<p>Show family matches</p>
+				<GiftForm
+					giftName={giftName}
+					giftCost={giftCost}
+					handleChangeText={this.onChangeText}
+					handleGiftSubmit={this.submitGift}
+					groupList={user.groups}
+					groupId={groupId}
+					handleCheckboxChange={this.onCheckboxChange}
+					user={user}
+				/>
+				<p>Boolean - If no group code, set it or request one</p>
+				<p>Show group matches</p>
+				{user.groups.map(group => (
+					<Groups group={group} key={group.accessCode} user={user} updateGiftList={(group) => this.props.updateUserGroup(group)} />
+				))}
 			</div>
 		);
 	}

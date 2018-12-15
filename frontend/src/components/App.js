@@ -22,12 +22,23 @@ class App extends Component {
 	async authUser() {
 		const user = await authenticateUser();
 		if (user.success) {
-			this.setState({ user });
+			this.setUser(user)
 		}
 	}
 
 	setUser = user => {
 		this.setState({ user });
+	};
+
+	updateUserGroup = group => {
+		const newState = { ...this.state };
+		const groupIndex = newState.user.groups.map(group => group._id).indexOf(group.group._id)
+		if(groupIndex < 0 ) {
+			newState.user.groups.push(group.group);
+		} else {
+			newState.user.groups.splice(groupIndex, 1, group.group)
+		}
+		this.setState(newState);
 	};
 
 	signOut = () => {
@@ -45,7 +56,9 @@ class App extends Component {
 					<NavLink to='/'>Home</NavLink>
 					{user && <Button onClick={this.signOut}>Sign Out</Button>}
 				</header>
-				{(user && this.props.location.pathname !== '/dashboard') && <Redirect to='/dashboard' />}
+				{user && this.props.location.pathname !== '/dashboard' && (
+					<Redirect to='/dashboard' />
+				)}
 				<Switch>
 					<Route
 						exact
@@ -53,7 +66,16 @@ class App extends Component {
 						render={() => <Homepage setUser={user => this.setUser(user)} />}
 					/>
 					{user ? (
-						<Route path='/dashboard' render={() => <Dashboard user={user} />} />
+						<Route
+							path='/dashboard'
+							render={() => (
+								<Dashboard
+									user={user}
+									onSetUser={user => this.setUser(user)}
+									updateUserGroup={group => this.updateUserGroup(group)}
+								/>
+							)}
+						/>
 					) : (
 						<Redirect to='/' />
 					)}

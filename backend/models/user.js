@@ -6,7 +6,7 @@ const UserSchema = new Schema (
     fname: String,
     lname: String,
     email: {type: String, sparse: true, lowercase: true},
-    password: String,
+    password: {type: String, select: false },
     groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
   },
   { timestamps: true }

@@ -30,37 +30,40 @@ router.post('/usersignin/', (req, res) => {
 			error: 'Not all fields have been completed'
 		});
 	}
-	User.findOne({ email: email.toLowerCase() }, (err, user) => {
-		if (!user)
-			return res.json({
-				success: false,
-				error: 'The email or password do not match.  Please try again.'
-			});
-		return bcrypt.compare(password, user.password).then(response => {
-			if (!response)
+	User.findOne({ email: email.toLowerCase() })
+		.populate('groups')
+		.exec((err, user) => {
+			if (!user)
 				return res.json({
 					success: false,
 					error: 'The email or password do not match.  Please try again.'
 				});
-			return res.json({
-				token: jwt.sign(
-					{
-						email: user.email,
-						userId: user._id,
-						fname: user.fname,
-						lname: user.lname
-					},
-					process.env.SECRET_KEY
-				),
-				groups: user.groups,
-				email: user.email,
-				success: true,
-				userId: user._id,
-				fname: user.fname,
-				lname: user.lname
+			return bcrypt.compare(password, user.password).then(response => {
+				if (!response)
+					return res.json({
+						success: false,
+						error: 'The email or password do not match.  Please try again.'
+					});
+				return res.json({
+					token: jwt.sign(
+						{
+							groups: user.groups,
+							email: user.email,
+							userId: user._id,
+							fname: user.fname,
+							lname: user.lname
+						},
+						process.env.SECRET_KEY
+					),
+					groups: user.groups,
+					email: user.email,
+					success: true,
+					userId: user._id,
+					fname: user.fname,
+					lname: user.lname
+				});
 			});
 		});
-	});
 });
 
 router.get('/authuser/', (req, res) => {

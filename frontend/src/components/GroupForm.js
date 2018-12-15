@@ -1,22 +1,13 @@
-import React from 'react';
-import Button from './styles/Button';
+import React, { Component } from 'react';
 
-const GroupForm = props =>
-	props.members.map((member, index) => {
-		return (
-			<fieldset key={index}>
-				<label>
-					Group Member
-					<input
-						type='text'
-						value={member.memberName}
-						name={index}
-						onChange={props.handleMemberChangeText}
-					/>
-				</label>
-        <Button name={index} onClick={props.handleMemberDelete}>Delete</Button>
-			</fieldset>
-		);
-	});
+class GroupForm extends Component {
+  render() {
+    return (
+      <div>
+        
+      </div>
+    );
+  }
+}
 
 export default GroupForm;

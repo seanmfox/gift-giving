@@ -19,15 +19,51 @@ export async function authenticateUser() {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${localStorage.getItem('JWT')}`
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
 		}
 	}).then(res => res.json());
 }
 
-export async function createNewGroup(gname, members, accessCode, userName, userId) {
+export async function createNewGroup(
+	gname,
+	members,
+	accessCode,
+	userName,
+	userId
+) {
 	return fetch(`/api/groups`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ gname, members, accessCode, userName, userId })
+	}).then(res => res.json());
+}
+
+export async function createNewGift(
+	giftName,
+	giftCost,
+	groupId,
+	participants,
+	giftRecipient,
+	giftPurchaser,
+	userId
+) {
+	return fetch(`/api/groups/${groupId}/gifts`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			giftName,
+			giftCost,
+			participants,
+			giftRecipient,
+			giftPurchaser,
+			userId
+		})
+	}).then(res => res.json());
+}
+
+export async function deleteGift(giftId, groupId) {
+	return fetch(`/api/groups/${groupId}/gifts/${giftId}`, {
+		method: 'DELETE',
+		headers: { 'Content-Type': 'application/json' }
 	}).then(res => res.json());
 }
