@@ -22,7 +22,7 @@ class App extends Component {
 	async authUser() {
 		const user = await authenticateUser();
 		if (user.success) {
-			this.setUser(user)
+			this.setUser(user);
 		}
 	}
 
@@ -32,11 +32,13 @@ class App extends Component {
 
 	updateUserGroup = group => {
 		const newState = { ...this.state };
-		const groupIndex = newState.user.groups.map(group => group._id).indexOf(group.group._id)
-		if(groupIndex < 0 ) {
+		const groupIndex = newState.user.groups
+			.map(group => group._id)
+			.indexOf(group.group._id);
+		if (groupIndex < 0) {
 			newState.user.groups.push(group.group);
 		} else {
-			newState.user.groups.splice(groupIndex, 1, group.group)
+			newState.user.groups.splice(groupIndex, 1, group.group);
 		}
 		this.setState(newState);
 	};
@@ -60,6 +62,7 @@ class App extends Component {
 					<Redirect to='/dashboard' />
 				)}
 				<Switch>
+					<Route path='/signup' render={() => <SignUp />} />
 					<Route
 						exact
 						path='/'
@@ -79,7 +82,6 @@ class App extends Component {
 					) : (
 						<Redirect to='/' />
 					)}
-					<Route path='/signup' render={() => <SignUp />} />
 				</Switch>
 			</div>
 		);

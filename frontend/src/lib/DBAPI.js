@@ -67,3 +67,23 @@ export async function deleteGift(giftId, groupId) {
 		headers: { 'Content-Type': 'application/json' }
 	}).then(res => res.json());
 }
+
+export async function retrieveGroup(code) {
+	return fetch(`/api/groups/retrievegroup/${code}`, {
+		method: 'GET',
+		headers: { 'Content-Type': 'application/json' }
+	}).then(res => res.json());
+}
+
+export async function assignGroupMember(selectedMember, groupId) {
+	return fetch(`/api/groups/${groupId}/updatemembers`, {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
+		},
+		body: JSON.stringify({
+			selectedMember
+		})
+	}).then(res => res.json())
+}

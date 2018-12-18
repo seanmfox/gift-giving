@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import Button from './styles/Button';
-import MemberForm from './MemberForm';
-import { createNewGroup, createNewGift } from '../lib/DBAPI';
+import { createNewGroup, createNewGift, retrieveGroup, assignGroupMember } from '../lib/DBAPI';
 import Groups from './Groups';
 import GiftForm from './GiftForm';
+import GroupForm from './GroupForm';
+import Join from './Join';
 
 class Dashboard extends Component {
 	state = {
@@ -14,7 +14,11 @@ class Dashboard extends Component {
 		groupId: '',
 		giftPurchaser: '',
 		participants: [],
-		giftRecipient: ''
+		giftRecipient: '',
+		accessCode: '',
+		retrievedMembers: '',
+		retrievedGroupId: '',
+		selectMember: ''
 	};
 
 	onChangeText = e => {
@@ -25,17 +29,20 @@ class Dashboard extends Component {
 	};
 
 	resetParticipants = () => {
-		this.setState({ participants: [] })
+		this.setState({ participants: [] });
 	};
 
 	onCheckboxChange = e => {
 		const newState = { ...this.state };
-		const memberList = this.props.user.groups.filter(group => group._id === newState.groupId)[0].members
+		const memberList = this.props.user.groups.filter(
+			group => group._id === newState.groupId
+		)[0].members;
 		const checkedMembers =
 			e.target.checked === true
 				? newState[e.target.name].concat(memberList[e.target.value])
 				: newState[e.target.name].filter(
-						participant => participant.memberName !== memberList[e.target.value].memberName
+						participant =>
+							participant.memberName !== memberList[e.target.value].memberName
 				);
 		this.setState({ participants: checkedMembers });
 	};
@@ -99,18 +106,67 @@ class Dashboard extends Component {
 
 	submitGift = e => {
 		e.preventDefault();
-		const { giftName, giftCost, groupId, participants, giftRecipient, giftPurchaser } = this.state;
-		const { user } = this.props
-		this.createGift(giftName, giftCost, groupId, participants, giftRecipient, giftPurchaser, user.userId)
+		const {
+			giftName,
+			giftCost,
+			groupId,
+			participants,
+			giftRecipient,
+			giftPurchaser
+		} = this.state;
+		const { user } = this.props;
+		this.createGift(
+			giftName,
+			giftCost,
+			groupId,
+			participants,
+			giftRecipient,
+			giftPurchaser,
+			user.userId
+		);
 	};
 
 	async createGift(...giftArgs) {
-		const gift = await createNewGift(...giftArgs)
+		const gift = await createNewGift(...giftArgs);
 		if (!gift.success) {
-			console.log('Gift not created')
+			console.log('Gift not created');
 		} else {
-			this.props.updateUserGroup(gift)
+			this.props.updateUserGroup(gift);
 		}
+	}
+
+	joinSubmit = e => {
+		e.preventDefault();
+		const { accessCode } = this.state;
+		const { user } = this.props;
+		const groupIndex = user.groups
+			.map(group => group.accessCode)
+			.indexOf(accessCode);
+		if (groupIndex >= 0) {
+			console.log('You already belong to that group');
+		} else {
+			console.log('Join submitted!');
+			this.findGroup(accessCode);
+		}
+	};
+
+	async findGroup(code) {
+		const group = await retrieveGroup(code);
+		console.log(group.group.members);
+		this.setState({ retrievedMembers: group.group.members, retrievedGroupId: group.group._id });
+	}
+
+	joinSelectSubmit = e => {
+		e.preventDefault()
+		const { selectMember, retrievedGroupId } = this.state
+		if (!selectMember) return;
+		this.assignMember(selectMember, retrievedGroupId)
+	}
+
+	async assignMember(selectMember, retrievedGroupId) {
+		const res = await assignGroupMember(selectMember, retrievedGroupId)
+		console.log(res)
+		this.props.updateUserGroup(res)
 	}
 
 	render() {
@@ -119,31 +175,36 @@ class Dashboard extends Component {
 			members,
 			giftName,
 			giftCost,
-			groupId
+			groupId,
+			accessCode,
+			retrievedMembers,
+			selectMember
 		} = this.state;
 		const { user } = this.props;
 
 		return (
 			<div>
 				<h1>Dashboard</h1>
-				<form onSubmit={this.submitGroup}>
-					<input
-						type='text'
-						name='gname'
-						value={gname}
-						onChange={this.onChangeText}
-						placeholder='Group Name'
-					/>
-					<Button type='button' onClick={this.addInput}>
-						Add Group Member
-					</Button>
-					<MemberForm
-						members={members}
-						handleMemberChangeText={this.onMemberChangeText}
-						handleMemberDelete={this.removeInput}
-					/>
-					<Button type='submit'>Submit</Button>
-				</form>
+				<h2>Create a new group</h2>
+				<GroupForm
+					handleSubmitGroup={this.submitGroup}
+					handleChangeText={this.onChangeText}
+					gname={gname}
+					members={members}
+					handleAddInput={this.addInput}
+					handleMemberChangeText={this.onMemberChangeText}
+					handleMemberDelete={this.removeInput}
+				/>
+				<h2>Join a group</h2>
+				<Join
+					handleChangeText={this.onChangeText}
+					accessCode={accessCode}
+					handleJoinSubmit={this.joinSubmit}
+					retrievedMembers={retrievedMembers}
+					handleJoinSelectSubmit={this.joinSelectSubmit}
+					selectMember={selectMember}
+				/>
+				<h2>Add a gift to a group</h2>
 				<GiftForm
 					giftName={giftName}
 					giftCost={giftCost}
@@ -157,7 +218,12 @@ class Dashboard extends Component {
 				<p>Boolean - If no group code, set it or request one</p>
 				<p>Show group matches</p>
 				{user.groups.map(group => (
-					<Groups group={group} key={group.accessCode} user={user} updateGiftList={(group) => this.props.updateUserGroup(group)} />
+					<Groups
+						group={group}
+						key={group.accessCode}
+						user={user}
+						updateGiftList={group => this.props.updateUserGroup(group)}
+					/>
 				))}
 			</div>
 		);

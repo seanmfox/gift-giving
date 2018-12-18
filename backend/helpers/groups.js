@@ -1,5 +1,6 @@
 const Group = require('../models').Group;
 const User = require('../models').User;
+const jwt = require('jsonwebtoken');
 
 exports.createGroup = (req, res) => {
 	const group = new Group();
@@ -21,6 +22,18 @@ exports.createGroup = (req, res) => {
 				return res.json({ success: true, group });
 			});
 		});
+	});
+};
+
+exports.retrieveGroup = (req, res) => {
+	const { accessCode } = req.params;
+	if (!accessCode)
+		return res.json({
+			success: false,
+			error: 'An valid access code is needed '
+		});
+	Group.findOne({ accessCode }).exec((err, group) => {
+		return res.json({ success: true, group });
 	});
 };
 
@@ -57,24 +70,7 @@ exports.createGift = (req, res) => {
 		});
 		group.save(err => {
 			if (err) return res.json({ success: false, error: err });
-			return res.json({ success: true, group})
-			// User.findById(userId)
-			// 	.populate('groups')
-			// 	.exec((err, user) => {
-			// 		if (!user)
-			// 			return res.json({
-			// 				success: false,
-			// 				error: 'The email or password do not match.  Please try again.'
-			// 			});
-			// 		return res.json({
-			// 			groups: user.groups,
-			// 			email: user.email,
-			// 			success: true,
-			// 			userId: user._id,
-			// 			fname: user.fname,
-			// 			lname: user.lname
-			// 		});
-			// 	});
+			return res.json({ success: true, group });
 		});
 	});
 };
@@ -93,6 +89,31 @@ exports.deleteGift = (req, res) => {
 		group.save(error => {
 			if (error) return res.json({ success: false, error: error });
 			return res.json({ success: true, group });
+		});
+	});
+};
+
+exports.updateMembers = (req, res) => {
+	const { selectedMember } = req.body;
+	const { groupId } = req.params;
+	const token = req.headers.authorization.split(' ')[1];
+	jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
+		User.findById(decoded.userId, (err, user) => {
+			user.groups.push(groupId);
+			user.save(err => {
+				Group.findById(groupId, (error, group) => {
+					const groupIndex = group.members
+						.map(member => member.memberName)
+						.indexOf(selectedMember);
+					group.members.splice(groupIndex, 1, {
+						memberName: `${user.fname} ${user.lname}`,
+						memberId: decoded.userId
+					});
+					group.save(err => {
+						return res.json({ success: true, group });
+					});
+				});
+			});
 		});
 	});
 };
