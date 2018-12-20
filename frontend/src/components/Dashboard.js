@@ -152,7 +152,6 @@ class Dashboard extends Component {
 
 	async findGroup(code) {
 		const group = await retrieveGroup(code);
-		console.log(group.group.members);
 		this.setState({ retrievedMembers: group.group.members, retrievedGroupId: group.group._id });
 	}
 
@@ -165,7 +164,6 @@ class Dashboard extends Component {
 
 	async assignMember(selectMember, retrievedGroupId) {
 		const res = await assignGroupMember(selectMember, retrievedGroupId)
-		console.log(res)
 		this.props.updateUserGroup(res)
 	}
 
@@ -185,6 +183,7 @@ class Dashboard extends Component {
 		return (
 			<div>
 				<h1>Dashboard</h1>
+				<h2>{`${user.fname} ${user.lname}`}</h2>
 				<h2>Create a new group</h2>
 				<GroupForm
 					handleSubmitGroup={this.submitGroup}

@@ -109,6 +109,23 @@ exports.updateMembers = (req, res) => {
 						memberName: `${user.fname} ${user.lname}`,
 						memberId: decoded.userId
 					});
+					group.gifts.map(gift => {
+						const groupIndex = gift.participants
+							.map(member => member.memberName)
+							.indexOf(selectedMember);
+						if (groupIndex > -1) {
+							gift.participants.splice(groupIndex, 1, {
+								memberName: `${user.fname} ${user.lname}`,
+								memberId: decoded.userId
+							});
+						}
+						if (gift.giftPurchaser === selectedMember) {
+							gift.giftPurchaser = `${user.fname} ${user.lname}`
+						}
+						if (gift.giftRecipient === selectedMember) {
+							gift.giftRecipient = `${user.fname} ${user.lname}`
+						}
+					});
 					group.save(err => {
 						return res.json({ success: true, group });
 					});
