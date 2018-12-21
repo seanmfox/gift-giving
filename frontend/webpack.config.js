@@ -22,7 +22,7 @@ module.exports = {
 	},
 	resolve: { extensions: ['*', '.js', '.jsx'] },
 	output: {
-		path: path.resolve(__dirname, '/dist'),
+		path: path.resolve(__dirname, 'dist/'),
 		publicPath: '/',
 		filename: 'bundle.js'
 	},
@@ -37,7 +37,7 @@ module.exports = {
 	},
 	plugins: [
 		new webpack.HotModuleReplacementPlugin(),
-		// new CleanWebpackPlugin(['dist']),
+		new CleanWebpackPlugin(['dist']),
 		new HtmlWebpackPlugin({
 			template: './public/index.html',
 			filename: './index.html'
