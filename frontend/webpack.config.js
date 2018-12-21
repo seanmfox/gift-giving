@@ -22,14 +22,13 @@ module.exports = {
 	},
 	resolve: { extensions: ['*', '.js', '.jsx'] },
 	output: {
-		path: path.resolve(__dirname, 'dist/'),
+		path: path.resolve(__dirname, '/dist'),
 		publicPath: '/',
 		filename: 'bundle.js'
 	},
 	devServer: {
-		contentBase: path.join(__dirname, 'public/'),
 		port: 3000,
-		publicPath: 'http://localhost:3000/dist/',
+		publicPath: 'http://localhost:3000/',
 		hot: true,
 		historyApiFallback: true,
 		proxy: {
@@ -40,7 +39,8 @@ module.exports = {
 		new webpack.HotModuleReplacementPlugin(),
 		new CleanWebpackPlugin(['dist']),
 		new HtmlWebpackPlugin({
-			template: './public/index.html'
+			template: './public/index.html',
+			filename: './index.html'
 		})
 	]
 };
