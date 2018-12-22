@@ -120,10 +120,48 @@ exports.updateMembers = (req, res) => {
 							});
 						}
 						if (gift.giftPurchaser === selectedMember) {
-							gift.giftPurchaser = `${user.fname} ${user.lname}`
+							gift.giftPurchaser = `${user.fname} ${user.lname}`;
 						}
 						if (gift.giftRecipient === selectedMember) {
-							gift.giftRecipient = `${user.fname} ${user.lname}`
+							gift.giftRecipient = `${user.fname} ${user.lname}`;
+						}
+					});
+					group.save(err => {
+						return res.json({ success: true, group });
+					});
+				});
+			});
+		});
+	});
+};
+
+exports.leaveGroup = (req, res) => {
+	const { groupId } = req.params;
+	const token = req.headers.authorization.split(' ')[1];
+	jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
+		User.findById(decoded.userId, (error, user) => {
+			const groupIndex = user.groups.indexOf(groupId);
+			if (groupIndex > -1) {
+				user.groups.splice(groupIndex, 1);
+			}
+			user.save(err => {
+				Group.findById(groupId, (error, group) => {
+					const memberIndex = group.members
+						.map(member => member.memberId)
+						.indexOf(decoded.userId);
+					group.members.splice(memberIndex, 1, {
+						memberName: `${user.fname} ${user.lname}`,
+						memberId: ''
+					});
+					group.gifts.map(gift => {
+						const groupIndex = gift.participants
+							.map(member => member.memberId)
+							.indexOf(decoded.userId);
+						if (groupIndex > -1) {
+							gift.participants.splice(groupIndex, 1, {
+								memberName: `${user.fname} ${user.lname}`,
+								memberId: ''
+							});
 						}
 					});
 					group.save(err => {

@@ -145,7 +145,6 @@ class Dashboard extends Component {
 		if (groupIndex >= 0) {
 			console.log('You already belong to that group');
 		} else {
-			console.log('Join submitted!');
 			this.findGroup(accessCode);
 		}
 	};
@@ -221,7 +220,7 @@ class Dashboard extends Component {
 						group={group}
 						key={group.accessCode}
 						user={user}
-						updateGiftList={group => this.props.updateUserGroup(group)}
+						updateUserGroup={group => this.props.updateUserGroup(group)}
 					/>
 				))}
 			</div>

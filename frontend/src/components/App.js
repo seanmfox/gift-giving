@@ -38,7 +38,14 @@ class App extends Component {
 		if (groupIndex < 0) {
 			newState.user.groups.push(group.group);
 		} else {
-			newState.user.groups.splice(groupIndex, 1, group.group);
+			const memberIndex = group.group.members
+				.map(member => member.memberId)
+				.indexOf(newState.user.userId);
+			if (memberIndex < 0) {
+				newState.user.groups.splice(groupIndex, 1);
+			} else {
+				newState.user.groups.splice(groupIndex, 1, group.group);
+			}
 		}
 		this.setState(newState);
 	};

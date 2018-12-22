@@ -87,3 +87,13 @@ export async function assignGroupMember(selectedMember, groupId) {
 		})
 	}).then(res => res.json())
 }
+
+export async function leaveGroup(groupId) {
+	return fetch(`api/groups/${groupId}`, {
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
+		}
+	}).then(res => res.json())
+}
