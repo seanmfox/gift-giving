@@ -6,7 +6,7 @@ class Join extends Component {
 	render() {
 		const { accessCode, retrievedMembers, selectMember } = this.props;
 		return (
-			<div>
+			<React.Fragment>
 				<JoinForm
 					handleChangeText={this.props.handleChangeText}
 					accessCode={accessCode}
@@ -20,7 +20,7 @@ class Join extends Component {
             selectMember={selectMember}
 					/>
 				)}
-			</div>
+			</React.Fragment>
 		);
 	}
 }

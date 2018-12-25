@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { createNewGroup, createNewGift, retrieveGroup, assignGroupMember } from '../lib/DBAPI';
+import {
+	createNewGroup,
+	createNewGift,
+	retrieveGroup,
+	assignGroupMember
+} from '../lib/DBAPI';
 import Groups from './Groups';
 import GiftForm from './GiftForm';
 import GroupForm from './GroupForm';
@@ -43,7 +48,7 @@ class Dashboard extends Component {
 				: newState[e.target.name].filter(
 						participant =>
 							participant.memberName !== memberList[e.target.value].memberName
-				);
+				  );
 		this.setState({ participants: checkedMembers });
 	};
 
@@ -151,20 +156,27 @@ class Dashboard extends Component {
 
 	async findGroup(code) {
 		const group = await retrieveGroup(code);
-		this.setState({ retrievedMembers: group.group.members, retrievedGroupId: group.group._id });
+		this.setState({
+			retrievedMembers: group.group.members,
+			retrievedGroupId: group.group._id
+		});
 	}
 
 	joinSelectSubmit = e => {
-		e.preventDefault()
-		const { selectMember, retrievedGroupId } = this.state
+		e.preventDefault();
+		const { selectMember, retrievedGroupId } = this.state;
 		if (!selectMember) return;
-		this.assignMember(selectMember, retrievedGroupId)
-	}
+		this.assignMember(selectMember, retrievedGroupId);
+	};
 
 	async assignMember(selectMember, retrievedGroupId) {
-		const res = await assignGroupMember(selectMember, retrievedGroupId)
-		this.props.updateUserGroup(res)
+		const res = await assignGroupMember(selectMember, retrievedGroupId);
+		this.props.updateUserGroup(res);
 	}
+
+	handleClick = e => {
+		e.target.nextSibling.classList.toggle('closed');
+	};
 
 	render() {
 		const {
@@ -180,50 +192,58 @@ class Dashboard extends Component {
 		const { user } = this.props;
 
 		return (
-			<div>
+			<main>
 				<h1>Dashboard</h1>
 				<h2>{`${user.fname} ${user.lname}`}</h2>
-				<h2>Create a new group</h2>
-				<GroupForm
-					handleSubmitGroup={this.submitGroup}
-					handleChangeText={this.onChangeText}
-					gname={gname}
-					members={members}
-					handleAddInput={this.addInput}
-					handleMemberChangeText={this.onMemberChangeText}
-					handleMemberDelete={this.removeInput}
-				/>
-				<h2>Join a group</h2>
-				<Join
-					handleChangeText={this.onChangeText}
-					accessCode={accessCode}
-					handleJoinSubmit={this.joinSubmit}
-					retrievedMembers={retrievedMembers}
-					handleJoinSelectSubmit={this.joinSelectSubmit}
-					selectMember={selectMember}
-				/>
-				<h2>Add a gift to a group</h2>
-				<GiftForm
-					giftName={giftName}
-					giftCost={giftCost}
-					handleChangeText={this.onChangeText}
-					handleGiftSubmit={this.submitGift}
-					groupList={user.groups}
-					groupId={groupId}
-					handleCheckboxChange={this.onCheckboxChange}
-					user={user}
-				/>
-				<p>Boolean - If no group code, set it or request one</p>
-				<p>Show group matches</p>
-				{user.groups.map(group => (
-					<Groups
-						group={group}
-						key={group.accessCode}
-						user={user}
-						updateUserGroup={group => this.props.updateUserGroup(group)}
+				<h2 onClick={this.handleClick}>Create a new group</h2>
+				<div className='group-form closed dropdown'>
+					<GroupForm
+						handleSubmitGroup={this.submitGroup}
+						handleChangeText={this.onChangeText}
+						gname={gname}
+						members={members}
+						handleAddInput={this.addInput}
+						handleMemberChangeText={this.onMemberChangeText}
+						handleMemberDelete={this.removeInput}
 					/>
-				))}
-			</div>
+				</div>
+				<h2 onClick={this.handleClick}>Join a group</h2>
+				<div className='join-form closed dropdown'>
+					<Join
+						handleChangeText={this.onChangeText}
+						accessCode={accessCode}
+						handleJoinSubmit={this.joinSubmit}
+						retrievedMembers={retrievedMembers}
+						handleJoinSelectSubmit={this.joinSelectSubmit}
+						selectMember={selectMember}
+					/>
+				</div>
+				<h2 onClick={this.handleClick}>Add a gift to a group</h2>
+				<div className='gift-form closed dropdown'>
+					<GiftForm
+						giftName={giftName}
+						giftCost={giftCost}
+						handleChangeText={this.onChangeText}
+						handleGiftSubmit={this.submitGift}
+						groupList={user.groups}
+						groupId={groupId}
+						handleCheckboxChange={this.onCheckboxChange}
+						user={user}
+					/>
+				</div>
+				<p>Boolean - If no group code, set it or request one</p>
+				<h2 onClick={this.handleClick}>Groups</h2>
+				<div className='groups-list closed dropdown'>
+					{user.groups.map(group => (
+						<Groups
+							key={group.accessCode}
+							group={group}
+							user={user}
+							updateUserGroup={group => this.props.updateUserGroup(group)}
+						/>
+					))}
+				</div>
+			</main>
 		);
 	}
 }

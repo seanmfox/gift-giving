@@ -12,7 +12,7 @@ class GiftList extends Component {
 			<div>
 				<ul>
 					<li>Gift Name: {gift.giftName}</li>
-					<li>GIft Cost: {gift.giftCost}</li>
+					<li>Gift Cost: {gift.giftCost}</li>
 					<li>Gift Recipient: {gift.giftRecipient}</li>
 					<li>Gift Purchaser: {gift.giftPurchaser}</li>
 					<li>

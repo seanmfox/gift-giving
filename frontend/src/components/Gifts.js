@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import GiftList from './GiftList';
 import { deleteGift } from '../lib/DBAPI';
 class Gifts extends Component {
-	memberNameArray = gift => {
-		return gift.participants.map(participant => participant.memberName);
+	memberIdArray = gift => {
+		return gift.participants.map(participant => participant.memberId);
 	};
 
 	submitGiftDelete = (giftId, groupId) => {
@@ -17,14 +17,13 @@ class Gifts extends Component {
 
 	render() {
 		const { group, user } = this.props;
-
 		return (
 			<div>
 				{group.gifts
 					.filter(
 						gift =>
 							gift.giftRecipient !== `${user.fname} ${user.lname}` &&
-							this.memberNameArray(gift).includes(`${user.fname} ${user.lname}`)
+							this.memberIdArray(gift).includes(`${user.userId}`)
 					)
 					.map(gift => (
 						<GiftList
