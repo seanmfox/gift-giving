@@ -18,7 +18,7 @@ class Gifts extends Component {
 	render() {
 		const { group, user } = this.props;
 		return (
-			<div>
+			<ul>
 				{group.gifts
 					.filter(
 						gift =>
@@ -32,7 +32,7 @@ class Gifts extends Component {
 							handleGiftDelete={giftId => this.submitGiftDelete(giftId, group._id)}
 						/>
 					))}
-			</div>
+			</ul>
 		);
 	}
 }

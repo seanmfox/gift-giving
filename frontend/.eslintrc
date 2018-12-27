@@ -25,6 +25,7 @@
 		"strict": 0,
 		"import/prefer-default export": 0,
 		"import": 0,
+		"no-mixed-spaces-and-tabs": 0,
 		"import/extensions": 0,
 		"react/react-in-jsx-scope": 0,
 		"react/jsx-uses-react": 1,

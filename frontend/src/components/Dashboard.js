@@ -9,6 +9,7 @@ import Groups from './Groups';
 import GiftForm from './GiftForm';
 import GroupForm from './GroupForm';
 import Join from './Join';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Dashboard extends Component {
 	state = {
@@ -23,7 +24,11 @@ class Dashboard extends Component {
 		accessCode: '',
 		retrievedMembers: '',
 		retrievedGroupId: '',
-		selectMember: ''
+		selectMember: '',
+		groupFormOpen: false,
+		joinFormOpen: false,
+		giftFormOpen: false,
+		groupsListOpen: false
 	};
 
 	onChangeText = e => {
@@ -175,7 +180,10 @@ class Dashboard extends Component {
 	}
 
 	handleClick = e => {
-		e.target.nextSibling.classList.toggle('closed');
+		const newState = { ...this.state };
+		const menu = e.target.id;
+		newState[menu] = !newState[menu];
+		this.setState(newState);
 	};
 
 	render() {
@@ -187,7 +195,11 @@ class Dashboard extends Component {
 			groupId,
 			accessCode,
 			retrievedMembers,
-			selectMember
+			selectMember,
+			groupFormOpen,
+			joinFormOpen,
+			giftFormOpen,
+			groupsListOpen
 		} = this.state;
 		const { user } = this.props;
 
@@ -195,54 +207,90 @@ class Dashboard extends Component {
 			<main>
 				<h1>Dashboard</h1>
 				<h2>{`${user.fname} ${user.lname}`}</h2>
-				<h2 onClick={this.handleClick}>Create a new group</h2>
-				<div className='group-form closed dropdown'>
-					<GroupForm
-						handleSubmitGroup={this.submitGroup}
-						handleChangeText={this.onChangeText}
-						gname={gname}
-						members={members}
-						handleAddInput={this.addInput}
-						handleMemberChangeText={this.onMemberChangeText}
-						handleMemberDelete={this.removeInput}
-					/>
-				</div>
-				<h2 onClick={this.handleClick}>Join a group</h2>
-				<div className='join-form closed dropdown'>
-					<Join
-						handleChangeText={this.onChangeText}
-						accessCode={accessCode}
-						handleJoinSubmit={this.joinSubmit}
-						retrievedMembers={retrievedMembers}
-						handleJoinSelectSubmit={this.joinSelectSubmit}
-						selectMember={selectMember}
-					/>
-				</div>
-				<h2 onClick={this.handleClick}>Add a gift to a group</h2>
-				<div className='gift-form closed dropdown'>
-					<GiftForm
-						giftName={giftName}
-						giftCost={giftCost}
-						handleChangeText={this.onChangeText}
-						handleGiftSubmit={this.submitGift}
-						groupList={user.groups}
-						groupId={groupId}
-						handleCheckboxChange={this.onCheckboxChange}
-						user={user}
-					/>
-				</div>
-				<p>Boolean - If no group code, set it or request one</p>
-				<h2 onClick={this.handleClick}>Groups</h2>
-				<div className='groups-list closed dropdown'>
-					{user.groups.map(group => (
-						<Groups
-							key={group.accessCode}
-							group={group}
-							user={user}
-							updateUserGroup={group => this.props.updateUserGroup(group)}
+				<h2 id='groupFormOpen' className='dashboard-headings' onClick={this.handleClick}>
+					{groupFormOpen ? (
+						<FontAwesomeIcon icon='angle-down' />
+					) : (
+						<FontAwesomeIcon icon='angle-right' />
+					)}
+					Create a new group
+				</h2>
+				{groupFormOpen && (
+					<div className='group-form dropdown'>
+						<GroupForm
+							handleSubmitGroup={this.submitGroup}
+							handleChangeText={this.onChangeText}
+							gname={gname}
+							members={members}
+							handleAddInput={this.addInput}
+							handleMemberChangeText={this.onMemberChangeText}
+							handleMemberDelete={this.removeInput}
 						/>
-					))}
-				</div>
+					</div>
+				)}
+				<h2 id='joinFormOpen' className='dashboard-headings' onClick={this.handleClick}>
+					{joinFormOpen ? (
+						<FontAwesomeIcon icon='angle-down' />
+					) : (
+						<FontAwesomeIcon icon='angle-right' />
+					)}
+					Join a group
+				</h2>
+				{joinFormOpen && (
+					<div className='join-form dropdown'>
+						<Join
+							handleChangeText={this.onChangeText}
+							accessCode={accessCode}
+							handleJoinSubmit={this.joinSubmit}
+							retrievedMembers={retrievedMembers}
+							handleJoinSelectSubmit={this.joinSelectSubmit}
+							selectMember={selectMember}
+						/>
+					</div>
+				)}
+				<h2 id='giftFormOpen' className='dashboard-headings' onClick={this.handleClick}>
+					{giftFormOpen ? (
+						<FontAwesomeIcon icon='angle-down' />
+					) : (
+						<FontAwesomeIcon icon='angle-right' />
+					)}
+					Add a gift to a group
+				</h2>
+				{giftFormOpen && (
+					<div className='gift-form dropdown'>
+						<GiftForm
+							giftName={giftName}
+							giftCost={giftCost}
+							handleChangeText={this.onChangeText}
+							handleGiftSubmit={this.submitGift}
+							groupList={user.groups}
+							groupId={groupId}
+							handleCheckboxChange={this.onCheckboxChange}
+							user={user}
+						/>
+					</div>
+				)}
+				<h2 id='groupsListOpen' className='dashboard-headings' onClick={this.handleClick}>
+					{groupsListOpen ? (
+						<FontAwesomeIcon icon='angle-down' />
+					) : (
+						<FontAwesomeIcon icon='angle-right' />
+					)}
+					Groups
+				</h2>
+				{groupsListOpen && (
+					<div className='groups-list dropdown'>
+						{user.groups.map(group => (
+							<ul key={group.accessCode}>
+								<Groups
+									group={group}
+									user={user}
+									updateUserGroup={group => this.props.updateUserGroup(group)}
+								/>
+							</ul>
+						))}
+					</div>
+				)}
 			</main>
 		);
 	}

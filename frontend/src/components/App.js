@@ -7,6 +7,11 @@ import SignUp from './SignUp';
 import Homepage from './Homepage';
 import { authenticateUser } from '../lib/DBAPI';
 import Button from './styles/Button';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faAngleRight)
+library.add(faAngleDown)
 
 class App extends Component {
 	state = {
@@ -60,10 +65,18 @@ class App extends Component {
 		return (
 			<div className='app'>
 				<header>
-					<NavLink to='/dashboard'>Dashboard</NavLink>
-					<NavLink to='/signup'>SignUp</NavLink>
-					<NavLink to='/'>Home</NavLink>
-					{user && <Button onClick={this.signOut}>Sign Out</Button>}
+					{!user && (
+						<>
+							<NavLink to='/'>Home</NavLink>
+							<NavLink to='/signup'>SignUp</NavLink>
+						</>
+					)}
+					{user && (
+						<>
+							<NavLink to='/dashboard'>Dashboard</NavLink>
+							<Button onClick={this.signOut}>Sign Out</Button>
+						</>
+					)}
 				</header>
 				{user && this.props.location.pathname !== '/dashboard' && (
 					<Redirect to='/dashboard' />

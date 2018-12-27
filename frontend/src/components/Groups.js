@@ -4,6 +4,10 @@ import Button from './styles/Button';
 import { leaveGroup } from '../lib/DBAPI';
 
 class Groups extends Component {
+	state = {
+		showGifts: false
+	};
+
 	handleGroupLeave = e => {
 		this.onGroupLeave(e.target.value);
 	};
@@ -13,28 +17,31 @@ class Groups extends Component {
 		this.props.updateUserGroup(res);
 	}
 
-	handleClick = e => {
-		e.target.firstElementChild.nextSibling.classList.toggle('closed');
+	handleClick = () => {
+		this.setState(prevState => ({
+			showGifts: (prevState.showGifts = !prevState.showGifts)
+		}));
 	};
 
 	render() {
+		const { showGifts } = this.state;
 		const { group, user } = this.props;
 		return (
-			<ul key={group.accessCode} onClick={this.handleClick}>
-				{group.gname}
-				<li>
+			<li>
+				<h3 onClick={this.handleClick}>
+					{group.gname} - Access Code: {group.accessCode.toUpperCase()}
 					<Button value={group._id} onClick={this.handleGroupLeave}>
 						Leave Group
 					</Button>
-				</li>
-				<li className='closed'>
-					<Gifts
-						group={group}
-						user={user}
-						updateGiftList={group => this.props.updateUserGroup(group)}
-					/>
-				</li>
-			</ul>
+				</h3>
+					{showGifts && (
+						<Gifts
+							group={group}
+							user={user}
+							updateGiftList={group => this.props.updateUserGroup(group)}
+						/>
+					)}
+			</li>
 		);
 	}
 }
