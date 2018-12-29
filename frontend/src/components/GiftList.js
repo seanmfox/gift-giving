@@ -24,7 +24,7 @@ class GiftList extends Component {
 					{gift.giftName} for {gift.giftRecipient}
 				</h4>
 				{showGift && (
-					<ul>
+					<ul className='gift-list-details'>
 						<li>Gift Cost: {gift.giftCost}</li>
 						<li>Gift Purchaser: {gift.giftPurchaser}</li>
 						<li>

@@ -7,11 +7,14 @@ import SignUp from './SignUp';
 import Homepage from './Homepage';
 import { authenticateUser } from '../lib/DBAPI';
 import Button from './styles/Button';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons'
-
-library.add(faAngleRight)
-library.add(faAngleDown)
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+	faAngleRight,
+	faAngleDown,
+	faTrash,
+	faUserPlus
+} from '@fortawesome/free-solid-svg-icons';
+library.add(faAngleRight, faAngleDown, faTrash, faUserPlus);
 
 class App extends Component {
 	state = {
@@ -65,44 +68,51 @@ class App extends Component {
 		return (
 			<div className='app'>
 				<header>
-					{!user && (
-						<>
-							<NavLink to='/'>Home</NavLink>
-							<NavLink to='/signup'>SignUp</NavLink>
-						</>
-					)}
-					{user && (
-						<>
-							<NavLink to='/dashboard'>Dashboard</NavLink>
-							<Button onClick={this.signOut}>Sign Out</Button>
-						</>
-					)}
+					<div className='header-contents'>
+						<div className='site-logo' />
+						<nav className='header-links'>
+							{!user && (
+								<>
+									<NavLink to='/'>Home</NavLink>
+									<NavLink to='/signup'>SignUp</NavLink>
+								</>
+							)}
+							{user && (
+								<>
+									{false && <NavLink to='/dashboard'>Dashboard</NavLink>}
+									<Button onClick={this.signOut}>Sign Out</Button>
+								</>
+							)}
+						</nav>
+					</div>
 				</header>
 				{user && this.props.location.pathname !== '/dashboard' && (
 					<Redirect to='/dashboard' />
 				)}
-				<Switch>
-					<Route path='/signup' render={() => <SignUp />} />
-					<Route
-						exact
-						path='/'
-						render={() => <Homepage setUser={user => this.setUser(user)} />}
-					/>
-					{user ? (
+				<main>
+					<Switch>
+						<Route path='/signup' render={() => <SignUp />} />
 						<Route
-							path='/dashboard'
-							render={() => (
-								<Dashboard
-									user={user}
-									onSetUser={user => this.setUser(user)}
-									updateUserGroup={group => this.updateUserGroup(group)}
-								/>
-							)}
+							exact
+							path='/'
+							render={() => <Homepage setUser={user => this.setUser(user)} />}
 						/>
-					) : (
-						<Redirect to='/' />
-					)}
-				</Switch>
+						{user ? (
+							<Route
+								path='/dashboard'
+								render={() => (
+									<Dashboard
+										user={user}
+										onSetUser={user => this.setUser(user)}
+										updateUserGroup={group => this.updateUserGroup(group)}
+									/>
+								)}
+							/>
+						) : (
+							<Redirect to='/' />
+						)}
+					</Switch>
+				</main>
 			</div>
 		);
 	}

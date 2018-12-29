@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from './styles/Button';
 
 const MemberForm = props =>
 	props.members.map((member, index) => {
@@ -12,9 +11,10 @@ const MemberForm = props =>
 						value={member.memberName}
 						name={index}
 						onChange={props.handleMemberChangeText}
+						placeholder='Member name'
 					/>
 				</label>
-        <Button type='button' name={index} onClick={props.handleMemberDelete}>Delete</Button>
+        <button type='button' name={index} onClick={props.handleMemberDelete}>Delete</button>
 			</fieldset>
 		);
 	});

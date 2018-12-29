@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './components/styles/Button';
+import Button from './styles/Button';
 
 const JoinSelect = props => (
 	<form onSubmit={props.handleJoinSelectSubmit}>

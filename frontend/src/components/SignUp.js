@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import UserForm from './UserForm';
 import { createNewUser } from '../lib/DBAPI';
 
@@ -38,13 +39,14 @@ class SignUp extends Component {
 				password: '',
 				verifyPassword: ''
 			});
+			this.props.history.push("/");
 		}
 	}
 
 	render() {
 		const { fname, lname, password, verifyPassword, email } = this.state;
 		return (
-			<div>
+			<div className='signup-form-container'>
 				<UserForm
 					password={password}
 					verifyPassword={verifyPassword}
@@ -59,4 +61,4 @@ class SignUp extends Component {
 	}
 }
 
-export default SignUp;
+export default withRouter(SignUp);

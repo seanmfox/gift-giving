@@ -177,6 +177,14 @@ class Dashboard extends Component {
 	async assignMember(selectMember, retrievedGroupId) {
 		const res = await assignGroupMember(selectMember, retrievedGroupId);
 		this.props.updateUserGroup(res);
+		this.setState({
+			accessCode: '',
+			selectMember: '',
+			retrieveGroupId: '',
+			retrievedMembers: '',
+			joinFormOpen: false,
+			groupsListOpen: true
+		});
 	}
 
 	handleClick = e => {
@@ -204,10 +212,14 @@ class Dashboard extends Component {
 		const { user } = this.props;
 
 		return (
-			<main>
+			<div className='dashboard-container'>
 				<h1>Dashboard</h1>
 				<h2>{`${user.fname} ${user.lname}`}</h2>
-				<h2 id='groupFormOpen' className='dashboard-headings' onClick={this.handleClick}>
+				<h2
+					id='groupFormOpen'
+					className='dashboard-headings'
+					onClick={this.handleClick}
+				>
 					{groupFormOpen ? (
 						<FontAwesomeIcon icon='angle-down' />
 					) : (
@@ -226,9 +238,14 @@ class Dashboard extends Component {
 							handleMemberChangeText={this.onMemberChangeText}
 							handleMemberDelete={this.removeInput}
 						/>
+						<hr />
 					</div>
 				)}
-				<h2 id='joinFormOpen' className='dashboard-headings' onClick={this.handleClick}>
+				<h2
+					id='joinFormOpen'
+					className='dashboard-headings'
+					onClick={this.handleClick}
+				>
 					{joinFormOpen ? (
 						<FontAwesomeIcon icon='angle-down' />
 					) : (
@@ -246,9 +263,14 @@ class Dashboard extends Component {
 							handleJoinSelectSubmit={this.joinSelectSubmit}
 							selectMember={selectMember}
 						/>
+						<hr />
 					</div>
 				)}
-				<h2 id='giftFormOpen' className='dashboard-headings' onClick={this.handleClick}>
+				<h2
+					id='giftFormOpen'
+					className='dashboard-headings'
+					onClick={this.handleClick}
+				>
 					{giftFormOpen ? (
 						<FontAwesomeIcon icon='angle-down' />
 					) : (
@@ -268,9 +290,14 @@ class Dashboard extends Component {
 							handleCheckboxChange={this.onCheckboxChange}
 							user={user}
 						/>
+						<hr />
 					</div>
 				)}
-				<h2 id='groupsListOpen' className='dashboard-headings' onClick={this.handleClick}>
+				<h2
+					id='groupsListOpen'
+					className='dashboard-headings'
+					onClick={this.handleClick}
+				>
 					{groupsListOpen ? (
 						<FontAwesomeIcon icon='angle-down' />
 					) : (
@@ -291,7 +318,7 @@ class Dashboard extends Component {
 						))}
 					</div>
 				)}
-			</main>
+			</div>
 		);
 	}
 }

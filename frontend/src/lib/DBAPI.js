@@ -33,7 +33,10 @@ export async function createNewGroup(
 ) {
 	return fetch(`/api/groups`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
+		},
 		body: JSON.stringify({ gname, members, accessCode, userName, userId })
 	}).then(res => res.json());
 }
@@ -49,7 +52,10 @@ export async function createNewGift(
 ) {
 	return fetch(`/api/groups/${groupId}/gifts`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
+		},
 		body: JSON.stringify({
 			giftName,
 			giftCost,
@@ -64,14 +70,20 @@ export async function createNewGift(
 export async function deleteGift(giftId, groupId) {
 	return fetch(`/api/groups/${groupId}/gifts/${giftId}`, {
 		method: 'DELETE',
-		headers: { 'Content-Type': 'application/json' }
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
+		}
 	}).then(res => res.json());
 }
 
 export async function retrieveGroup(code) {
-	return fetch(`/api/groups/retrievegroup/${code}`, {
+	return fetch(`/api/groups/retrievegroup/${code.toLowerCase()}`, {
 		method: 'GET',
-		headers: { 'Content-Type': 'application/json' }
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('JWT')}`
+		}
 	}).then(res => res.json());
 }
 

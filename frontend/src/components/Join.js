@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import JoinForm from './JoinForm';
-import JoinSelect from '../JoinSelect';
+import JoinSelect from './JoinSelect';
 
 class Join extends Component {
 	render() {

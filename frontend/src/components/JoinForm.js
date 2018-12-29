@@ -5,7 +5,7 @@ const JoinForm = props => (
   <div>
     <form onSubmit={props.handleJoinSubmit}>
       <label>
-      <input type='text' onChange={props.handleChangeText} name='accessCode' />
+      <input type='text' onChange={props.handleChangeText} name='accessCode' placeholder='Group access code' />
       </label>
       <Button type='submit'>Join Group</Button>
     </form>

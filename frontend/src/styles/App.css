@@ -17,14 +17,32 @@ main {
   margin: 0 20px;
 }
 
-header {
+.header-contents {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+}
+
+.site-logo {
+  background-image: url('../images/logo.svg');
+  background-repeat: no-repeat;
+  background-position-y: center;
+  height: 50px;
+  width: 250px;
+  margin-left: 20px;
+}
+
+.header-links {
+  padding-top: 15px;
+  width: 100%;
+  text-align: right;
+}
+
+.header-contents {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 header a, header button {
-  margin: 15px;
+  margin-right: 10px;
 }
 
 h2 svg {
@@ -43,6 +61,63 @@ fieldset {
   border: none;
 }
 
-.dashboard-headings:hover {
+.signin-container, .signup-form-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.dashboard-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.dashboard-container h1 {
+  text-align: center;
+}
+
+.dashboard-headings:hover, .groups-list h3:hover, .groups-list h4:hover {
   cursor: pointer;
+}
+
+.group-name-input {
+  display: block;
+}
+
+.homepage label {
+  display: block;
+  margin: 10px auto;
+}
+
+.homepage input, .signup-form-container input {
+  width: 100%
+}
+
+.homepage button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px auto;
+}
+
+.gifts-image {
+  height: 300px;
+  background: url('../images/undraw_gifts.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.gift-form label {
+  display: block;
+}
+
+.login-heading {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.gift-form-details {
+  list-style: none;
+}
+
+@media screen and (min-width: 700px) {
+
 }
