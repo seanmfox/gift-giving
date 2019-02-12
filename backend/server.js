@@ -7,6 +7,7 @@ const User = require('./models').User;
 const userRoutes = require('./routes/users');
 const groupRoutes = require('./routes/groups');
 const jwt = require('jsonwebtoken');
+const { loginRequired, ensureCorrectUser } = require('./middleware/auth');
 
 require('dotenv').config();
 
@@ -87,7 +88,7 @@ router.get('/authuser/', (req, res) => {
 
 app.use('/api', router);
 app.use('/api/users', userRoutes);
-app.use('/api/groups', groupRoutes);
+app.use('/api/groups', loginRequired, groupRoutes);
 
 if (process.env.NODE_ENV === 'production') {
 	// Serve any static files
