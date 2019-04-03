@@ -10,6 +10,8 @@ import GiftForm from './GiftForm';
 import GroupForm from './GroupForm';
 import Join from './Join';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { connect } from 'react-redux';
+import { updateGroupGift, updateGroups } from '../actions/group';
 
 class Dashboard extends Component {
 	state = {
@@ -44,7 +46,7 @@ class Dashboard extends Component {
 
 	onCheckboxChange = e => {
 		const newState = { ...this.state };
-		const memberList = this.props.user.groups.filter(
+		const memberList = this.props.groups.filter(
 			group => group._id === newState.groupId
 		)[0].members;
 		const checkedMembers =
@@ -97,8 +99,8 @@ class Dashboard extends Component {
 		if (!group.success) {
 			console.log('Group not created');
 		} else {
+			this.props.updateGroups(group.group);
 			this.setState({ gname: '', members: [{ memberName: '' }] });
-			this.props.updateUserGroup(group);
 		}
 	}
 
@@ -141,15 +143,23 @@ class Dashboard extends Component {
 		if (!gift.success) {
 			console.log('Gift not created');
 		} else {
-			this.props.updateUserGroup(gift);
+			this.props.updateGroupGift(gift.group);
+			this.setState({
+				giftName: '',
+				giftCost: '',
+				groupId: '',
+				participants: [],
+				giftRecipient: '',
+				giftPurchaser: ''
+			});
 		}
 	}
 
 	joinSubmit = e => {
 		e.preventDefault();
 		const { accessCode } = this.state;
-		const { user } = this.props;
-		const groupIndex = user.groups
+		const { groups } = this.props;
+		const groupIndex = groups
 			.map(group => group.accessCode)
 			.indexOf(accessCode);
 		if (groupIndex >= 0) {
@@ -176,7 +186,7 @@ class Dashboard extends Component {
 
 	async assignMember(selectMember, retrievedGroupId) {
 		const res = await assignGroupMember(selectMember, retrievedGroupId);
-		this.props.updateUserGroup(res);
+		this.props.updateGroups(res.group);
 		this.setState({
 			accessCode: '',
 			selectMember: '',
@@ -209,7 +219,7 @@ class Dashboard extends Component {
 			giftFormOpen,
 			groupsListOpen
 		} = this.state;
-		const { user } = this.props;
+		const { user, groups } = this.props;
 
 		return (
 			<div className='dashboard-container'>
@@ -285,10 +295,9 @@ class Dashboard extends Component {
 							giftCost={giftCost}
 							handleChangeText={this.onChangeText}
 							handleGiftSubmit={this.submitGift}
-							groupList={user.groups}
+							groupList={groups}
 							groupId={groupId}
 							handleCheckboxChange={this.onCheckboxChange}
-							user={user}
 						/>
 						<hr />
 					</div>
@@ -307,13 +316,9 @@ class Dashboard extends Component {
 				</h2>
 				{groupsListOpen && (
 					<div className='groups-list dropdown'>
-						{user.groups.map(group => (
+						{groups.map(group => (
 							<ul key={group.accessCode}>
-								<Groups
-									group={group}
-									user={user}
-									updateUserGroup={group => this.props.updateUserGroup(group)}
-								/>
+								<Groups group={group} />
 							</ul>
 						))}
 					</div>
@@ -323,4 +328,14 @@ class Dashboard extends Component {
 	}
 }
 
-export default Dashboard;
+const mapStateToProps = reduxState => {
+	return {
+		user: reduxState.user,
+		groups: reduxState.groups
+	};
+};
+
+export default connect(
+	mapStateToProps,
+	{ updateGroupGift, updateGroups }
+)(Dashboard);

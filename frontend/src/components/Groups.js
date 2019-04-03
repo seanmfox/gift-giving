@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Gifts from './Gifts';
 import Button from './styles/Button';
 import { leaveGroup } from '../lib/DBAPI';
+import { connect } from 'react-redux';
+import { updateGroups } from '../actions/group';
 
 class Groups extends Component {
 	state = {
@@ -14,7 +16,7 @@ class Groups extends Component {
 
 	async onGroupLeave(groupId) {
 		const res = await leaveGroup(groupId);
-		this.props.updateUserGroup(res);
+		this.props.updateGroups(res.group);
 	}
 
 	handleClick = () => {
@@ -34,16 +36,25 @@ class Groups extends Component {
 						Leave Group
 					</Button>
 				</h3>
-					{showGifts && (
-						<Gifts
-							group={group}
-							user={user}
-							updateGiftList={group => this.props.updateUserGroup(group)}
-						/>
-					)}
+				{showGifts && (
+					<Gifts
+						group={group}
+						user={user}
+						updateGiftList={group => this.props.updateUserGroup(group)}
+					/>
+				)}
 			</li>
 		);
 	}
 }
 
-export default Groups;
+const mapStateToProps = reduxState => {
+	return {
+		user: reduxState.user
+	};
+};
+
+export default connect(
+	mapStateToProps,
+	{ updateGroups }
+)(Groups);

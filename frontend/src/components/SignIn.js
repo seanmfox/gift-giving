@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Button from './styles/Button';
 import { signinUser } from '../lib/DBAPI';
+import { connect } from 'react-redux';
+import { updateUser } from '../actions/user';
 
 class SignIn extends Component {
 	state = {
@@ -24,7 +26,7 @@ class SignIn extends Component {
 		const userLogIn = await signinUser(email, password);
 		if (userLogIn.success) {
 			localStorage.JWT = userLogIn.token;
-			this.props.setUser(userLogIn);
+			this.props.updateUser(userLogIn);
 		}
 	}
 
@@ -60,4 +62,13 @@ class SignIn extends Component {
 	}
 }
 
-export default SignIn;
+const mapStateToProps = reduxState => {
+	return {
+		user: reduxState.user
+	};
+};
+
+export default connect(
+	mapStateToProps,
+	{ updateUser }
+)(SignIn);

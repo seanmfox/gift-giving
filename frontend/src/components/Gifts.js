@@ -1,19 +1,13 @@
 import React, { Component } from 'react';
 import GiftList from './GiftList';
-import { deleteGift } from '../lib/DBAPI';
+import { connect } from 'react-redux';
+
 class Gifts extends Component {
 	memberIdArray = gift => {
 		return gift.participants.map(participant => participant.memberId);
 	};
 
-	submitGiftDelete = (giftId, groupId) => {
-		this.onGiftDelete(giftId, groupId)
-	}
 
-	async onGiftDelete(giftId, groupId) {
-		const gift = await deleteGift(giftId, groupId);
-		this.props.updateGiftList(gift)
-	}
 
 	render() {
 		const { group, user } = this.props;
@@ -29,7 +23,7 @@ class Gifts extends Component {
 						<GiftList
 							key={gift._id}
 							gift={gift}
-							handleGiftDelete={giftId => this.submitGiftDelete(giftId, group._id)}
+							group={group}
 						/>
 					))}
 			</ul>
@@ -37,4 +31,12 @@ class Gifts extends Component {
 	}
 }
 
-export default Gifts;
+const mapStateToProps = reduxState => {
+	return {
+		user: reduxState.user
+	};
+};
+
+export default connect(
+	mapStateToProps
+)(Gifts);

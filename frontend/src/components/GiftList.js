@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
 import Button from './styles/Button';
+import { deleteGift } from '../lib/DBAPI';
+import { connect } from 'react-redux';
+import { updateGroupGift } from '../actions/group';
 
 class GiftList extends Component {
 	state = {
 		showGift: false
 	};
-	giftDelete = giftId => {
-		this.props.handleGiftDelete(giftId);
+
+	submitGiftDelete = (giftId, groupId) => {
+		this.onGiftDelete(giftId, groupId);
 	};
+
+	async onGiftDelete(giftId, groupId) {
+		const gift = await deleteGift(giftId, groupId);
+		this.props.updateGroupGift(gift.group);
+	}
 
 	handleClick = () => {
 		this.setState(prevState => ({
@@ -16,8 +25,8 @@ class GiftList extends Component {
 	};
 
 	render() {
-		const { showGift } = this.state
-		const { gift } = this.props;
+		const { showGift } = this.state;
+		const { gift, group } = this.props;
 		return (
 			<li>
 				<h4 onClick={this.handleClick}>
@@ -38,7 +47,11 @@ class GiftList extends Component {
 							</ul>
 						</li>
 						<li>
-							<Button onClick={() => this.giftDelete(gift._id)}>Delete</Button>
+							<Button
+								onClick={() => this.submitGiftDelete(gift._id, group._id)}
+							>
+								Delete
+							</Button>
 						</li>
 					</ul>
 				)}
@@ -47,4 +60,14 @@ class GiftList extends Component {
 	}
 }
 
-export default GiftList;
+const mapStateToProps = reduxState => {
+	return {
+		user: reduxState.user,
+		groups: reduxState.groups
+	};
+};
+
+export default connect(
+	mapStateToProps,
+	{ updateGroupGift }
+)(GiftList);

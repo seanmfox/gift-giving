@@ -15,11 +15,10 @@ import {
 	faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 library.add(faAngleRight, faAngleDown, faTrash, faUserPlus);
+import { connect } from 'react-redux';
+import { updateUser, logoutUser } from '../actions/user';
 
 class App extends Component {
-	state = {
-		user: ''
-	};
 
 	componentDidMount() {
 		if (localStorage.getItem('JWT')) {
@@ -35,36 +34,16 @@ class App extends Component {
 	}
 
 	setUser = user => {
-		this.setState({ user });
-	};
-
-	updateUserGroup = group => {
-		const newState = { ...this.state };
-		const groupIndex = newState.user.groups
-			.map(group => group._id)
-			.indexOf(group.group._id);
-		if (groupIndex < 0) {
-			newState.user.groups.push(group.group);
-		} else {
-			const memberIndex = group.group.members
-				.map(member => member.memberId)
-				.indexOf(newState.user.userId);
-			if (memberIndex < 0) {
-				newState.user.groups.splice(groupIndex, 1);
-			} else {
-				newState.user.groups.splice(groupIndex, 1, group.group);
-			}
-		}
-		this.setState(newState);
+		this.props.updateUser(user);
 	};
 
 	signOut = () => {
+		this.props.logoutUser();
 		localStorage.removeItem('JWT');
-		this.setState({ user: '' });
 	};
 
 	render() {
-		const { user } = this.state;
+		const { user } = this.props;
 		return (
 			<div className='app'>
 				<header>
@@ -98,16 +77,7 @@ class App extends Component {
 							render={() => <Homepage setUser={user => this.setUser(user)} />}
 						/>
 						{user ? (
-							<Route
-								path='/dashboard'
-								render={() => (
-									<Dashboard
-										user={user}
-										onSetUser={user => this.setUser(user)}
-										updateUserGroup={group => this.updateUserGroup(group)}
-									/>
-								)}
-							/>
+							<Route path='/dashboard' render={() => <Dashboard />} />
 						) : (
 							<Redirect to='/' />
 						)}
@@ -118,4 +88,17 @@ class App extends Component {
 	}
 }
 
-export default hot(module)(withRouter(App));
+const mapStateToProps = reduxState => {
+	return {
+		user: reduxState.user
+	};
+};
+
+export default hot(module)(
+	withRouter(
+		connect(
+			mapStateToProps,
+			{ updateUser, logoutUser }
+		)(App)
+	)
+);
